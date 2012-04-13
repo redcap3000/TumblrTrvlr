@@ -1,0 +1,159 @@
+
+<!--
+## Tumblr trvlr
+## Ronaldo Barbachano April 2012
+## doinglines.com
+
+	Tumblr API + Google Maps API + Javascript + HTML5
+	
+## Quickly create travel logs using tumblr. Simply add a tag with a valid
+## Google location (might want to double check it first) like  so :
+
+	address Market and Second St. San Francisco CA
+
+## All posts contained in your api feed that have 'address' tags will
+## automatically appear on the gmap with marker and corresponding 
+## infowindow /eventlistener. 
+
+
+## Only one info window appears on screen. Addresses are also used for the marker titles.
+
+
+## Images will be (by default) added to an info window. And data
+## Appended to the specified div.
+## Function build_gmap_marker() is very cool
+
+
+## Swap out the first two scripts with urls that point to your data
+## (tumblr feed & google api key)
+
+
+## Use function special_tag_search() to parse your own custom 'special'
+## tags.
+
+## Ronaldo Barbachano
+
+## Reads any tumblr feed, detects tags beginning with 'address' to 
+## use googleapi
+
+## Only supports photo posts for now! Advancements forthcoming...
+
+
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body onLoad="init();">
+	<div id="content"></div>
+	<div id="map_canvas" style="min-height: 500px;" ></div>
+	<div id="content_display"></div>
+</body>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<!--  CHANGE THE URL TO YOUR TUMBLR-->
+<script type="text/javascript" src="http://sfblotter.tumblr.com/api/read/json"></script>
+
+<!--  Add your API key if desired -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript">
+
+var infowindow=new google.maps.InfoWindow();
+var geocoder;
+var map;
+var the_content=[];
+
+function init(){
+	// for looking up 'regular' addresses inside of build_gmap_marker
+    geocoder = new google.maps.Geocoder();
+	var myOptions = {zoom: 11,mapTypeId: google.maps.MapTypeId.ROADMAP};
+
+	if(map == undefined){
+	    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+	}
+	
+	for(p=0;p<= tumblr_api_read.posts.length-1;p++){
+		if(p != undefined){
+			new build_post(tumblr_api_read.posts[p],p) ;
+		}
+	}
+}
+
+function build_post(post,index){
+
+	address = search_special_tag(post["tags"],'address');
+	if(address){
+		var infoWin= '';
+		if(post["photos"].length >0){
+			for(z=0;z <= post["photos"].length - 1;z++){
+				if(z != undefined){
+						infoWin +=  '<img src="' + post["photos"][z]["photo-url-500"]   + '"/>';
+					}
+			}
+		}else{
+			infoWin +='<img src="' + post["photo-url-500"] + '"/>';
+		}
+		build_gmap_marker(address,address, index, infoWin,post["photo-caption"]);
+	}
+	// process this post differently...
+}
+
+
+function build_gmap_marker(address,title,index,infoWindowContent,htmlContent) {
+	// Takes a regular address (San Francisco, CA), geocodes it, attaches title , index is for using
+	// this in a loop to define a bunch of addresses and dynamically create marker vars (marker_1,marker_2)
+	// the_content (defined in init) - is an array to use to dynamically only show one popup window
+	// would be better to accept a json param of some sort to make styling the marker behaviors faster.
+	
+	// default zoom
+  	var the_zoom = 12  ;		
+	
+	geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+		map.setCenter(results[0].geometry.location);
+		// probably could create more method params to better define the marker object (or even just take a marker)
+		// dynamically creates markers
+		
+		eval( "this.marker_"+ index +" = new google.maps.Marker({map: map, position: results[0].geometry.location, animation: google.maps.Animation.DROP,title:title});");
+		// select the window data based on a div that is address_post_ + whatever the index that is passed
+		// to properly refer to indices of the elements
+		// add a listener without creating another variable. Switches out the content of one 'infowindow' instead of 
+		// keeping track of multiple inputwindows (lets us only print one to screen at a time without worrying about closing others)
+		if(infoWindowContent != undefined && htmlContent != undefined){
+			
+			var html_display=document.getElementById("content_display");
+			
+			eval("google.maps.event.addListener(marker_"+index+", 'click', function() {infowindow.setContent(infoWindowContent);html_display.innerHTML = htmlContent;infowindow.open(map, marker_"+index+");});")
+		}	
+    } else {
+		// just in case the address does not return anything ...
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+}
+
+function search_special_tag(tags,tag){
+	// searches for a coded tag that starts with whatever is in tag, returns
+	// the matching string in the passed array, sans the originally coded word
+	// false otherwise
+	if(tags instanceof Array){
+		for(t=0;t<tags.length;t++){
+			if(tags[t].search(tag) == 0){
+				return tags[t].replace(tag,"") ;
+			}
+		}
+	}
+	return false;
+}
+
+</script>
+
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+</head>
+</html>

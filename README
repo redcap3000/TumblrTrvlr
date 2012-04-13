@@ -1,0 +1,14 @@
+## Tumblr trvlr
+## Ronaldo Barbachano April 2012
+
+
+	Tumblr API + Google Maps API + Javascript + HTML5
+	
+Quickly create travel logs using tumblr. Replace a url and  add a tag with a valid
+Google location (might want to double check it first) like  so :
+
+	address Market and Second St. San Francisco CA
+
+To existing or new tumblr posts.
+
+## More info in the html file ## 
