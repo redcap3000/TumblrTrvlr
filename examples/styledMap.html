@@ -1,0 +1,110 @@
+<!--
+## Tumblr trvlr
+## Ronaldo Barbachano April 2012
+
+	Tumblr API + Google Maps API + Javascript + HTML5
+	
+## Quickly create travel logs using tumblr. Simply add a tag with a valid
+## Google location (might want to double check it first) like  so :
+
+## This example shows how to create custom maps styles using included library 'gmapStyler'
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body onLoad="init();">
+	<div id="content"></div>
+	<div id="map_canvas" style="min-height: 500px;" ></div>
+	<div id="content_display"></div>
+</body>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<!--  CHANGE THE URL TO YOUR TUMBLR-->
+<script type="text/javascript" src="http://sfblotter.tumblr.com/api/read/json"></script>
+
+<!--  Add your API key if desired -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<!-- Custom Map Styler Helper Script  only needed for custom styled maps-->
+<!-- Script that processes tumblr API feed-->
+<script type="text/javascript" src="../js/tumblrTools.js"></script>
+
+<!-- Required for Styler helper function -->
+<script type="text/javascript" src="../js/gmapStyler.js"></script>
+
+<!-- Contains one function called inside of tumblrTools to geocode and address
+create a marker, custom marker icon, title,infowindow, and optional 'html' value
+to render onscreen in provided <div>  -->
+<script type="text/javascript" src="../js/gmapMarkers.js"></script>
+
+
+<script type="text/javascript">
+
+var infowindow=new google.maps.InfoWindow();
+var geocoder;
+var map;
+
+
+
+function init(){
+	// for looking up 'regular' addresses inside of build_gmap_marker
+    geocoder = new google.maps.Geocoder();
+	var MY_MAPTYPE_ID = 'My Custom Map';
+
+// shows different ways to use make_map_style and how you can mix and match parameters
+// inside an otherwise normal map_styles array/object
+
+// perhaps create an interactive interface that lets us update the map with styles in real time ?
+ 	var map_styles = [
+		// your basic style call
+	        make_map_style('road','geometry',make_map_styler(100,21,0) ),
+		make_map_style('road.highway','geometry',make_map_styler("#ff0022",60,-20) ),
+		make_map_style('road.local','geometry',make_map_styler("#ff0022",60,-20,0.7) ),
+		
+		// passes a false value to parameter to leave it undefined (instead of zero) to not appear in final
+		// style structure
+		make_map_style('road.local','labels',make_map_styler("#f6ff00",100,false,0.7) ),		
+		
+		// pass a make_map_style a json-style encoded string (array)	
+
+		make_map_style('road.highway','labels',{visibility:"off"}),		
+
+		make_map_style('water','geometry',make_map_styler("#f6ff00",false,false)),
+
+		// a hand written style structure
+		{
+	      featureType: "landscape",
+	      elementType: "geometry",
+	      stylers: [make_map_styler(100,10,100)]
+	    }
+	  ];
+	
+
+	var myOptions = {zoom: 13,mapTypeId: MY_MAPTYPE_ID,  mapTypeControlOptions: {
+	       mapTypeIds: [google.maps.MapTypeId.ROADMAP, MY_MAPTYPE_ID]
+	    }};
+
+	if(map == undefined){
+	    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+		// suport multiple custom maps
+	  	map.mapTypes.set(MY_MAPTYPE_ID, new google.maps.StyledMapType(map_styles, {  name: MY_MAPTYPE_ID}) );
+	}
+	
+	for(p=0;p<= tumblr_api_read.posts.length-1;p++){
+		if(p != undefined){
+			new build_post(tumblr_api_read.posts[p],p) ;
+		}
+	}
+}
+
+
+</script>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+</head>
+</html>

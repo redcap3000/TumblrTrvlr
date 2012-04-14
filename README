@@ -1,14 +1,37 @@
 ## Tumblr trvlr
 ## Ronaldo Barbachano April 2012
+## http://doinglines.com
+
+        Tumblr API + Google Maps API + Javascript + HTML5
+
+## Quickly create travel logs using tumblr. Simply add a tag with a valid
+## Google location (might want to double check it first) like  so :
+
+        address Market and Second St. San Francisco CA
+
+## All posts contained in your api feed that have 'address' tags will
+## automatically appear on the gmap with marker and corresponding
+## infowindow /eventlistener.
 
 
-	Tumblr API + Google Maps API + Javascript + HTML5
-	
-Quickly create travel logs using tumblr. Replace a url and  add a tag with a valid
-Google location (might want to double check it first) like  so :
+## Only one info window appears on screen. Addresses are also used for the marker titles.
 
-	address Market and Second St. San Francisco CA
 
-To existing or new tumblr posts.
+## Images will be (by default) added to an info window. And data
+## Appended to the specified div.
+## Function build_gmap_marker() is very cool
 
-## More info in the html file ## 
+
+## Swap out the first two scripts with urls that point to your data
+## (tumblr feed & google api key)
+
+
+## Use function special_tag_search() to parse your own custom 'special'
+## tags.
+
+## Ronaldo Barbachano
+
+## Reads any tumblr feed, detects tags beginning with 'address' to
+## use googleapi
+
+## Only supports photo posts for now! Advancements forthcoming...

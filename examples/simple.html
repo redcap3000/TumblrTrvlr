@@ -1,0 +1,65 @@
+<!--
+## Tumblr trvlr
+## Ronaldo Barbachano April 2012
+## doinglines.com
+##Tumblr API + Google Maps API + Javascript
+## Basic example of simple usage.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body onLoad="init();">
+	<div id="content"></div>
+	<div id="map_canvas" style="min-height: 500px;" ></div>
+	<div id="content_display"></div>
+</body>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<!--  CHANGE THE URL TO YOUR TUMBLR-->
+<script type="text/javascript" src="http://sfblotter.tumblr.com/api/read/json"></script>
+
+<!--  Add your API key if desired -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<!-- Script that processes tumblr API feed-->
+<script type="text/javascript" src="../js/tumblrTools.js"></script>
+
+
+<!-- Contains one function called inside of tumblrTools to geocode and address
+create a marker, custom marker icon, title,infowindow, and optional 'html' value
+to render onscreen in provided <div>  -->
+<script type="text/javascript" src="../js/gmapMarkers.js"></script>
+
+<script type="text/javascript">
+
+var infowindow=new google.maps.InfoWindow();
+var geocoder;
+var map;
+var the_content=[];
+
+function init(){
+	// for looking up 'regular' addresses inside of build_gmap_marker
+    	geocoder = new google.maps.Geocoder();
+	var myOptions = {zoom: 11,mapTypeId: google.maps.MapTypeId.ROADMAP};
+
+	if(map == undefined){
+	    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+	}
+	
+	for(p=0;p<= tumblr_api_read.posts.length-1;p++){
+		if(p != undefined){
+			new build_post(tumblr_api_read.posts[p],p) ;
+		}
+	}
+}
+
+</script>
+
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+</head>
+</html>
